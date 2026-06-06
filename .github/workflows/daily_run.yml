@@ -1,0 +1,30 @@
+name: Daily Feishu Update
+
+on:
+  schedule:
+    # 纽约时间中午12点 = UTC 17:00（冬令时）/ UTC 16:00（夏令时）
+    # 目前是夏令时，用16:00；冬令时改成17:00
+    - cron: '0 16 * * *'
+  workflow_dispatch:  # 允许手动触发，方便测试
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests pandas
+
+      - name: Run script
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+        run: python main.py
