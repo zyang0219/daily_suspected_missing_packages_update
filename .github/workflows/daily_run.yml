@@ -27,4 +27,4 @@ jobs:
         env:
           APP_ID: ${{ secrets.APP_ID }}
           APP_SECRET: ${{ secrets.APP_SECRET }}
-        run: python main.py
+        run: python daily_suspected_station_no_tracking_update.py
