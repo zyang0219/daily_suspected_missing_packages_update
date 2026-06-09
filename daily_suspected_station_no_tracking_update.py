@@ -3,6 +3,7 @@
 import requests
 import pandas as pd
 import datetime
+from zoneinfo import ZoneInfo
 import os
 
 # ── 配置 ────────────────────────────────────────────────────
@@ -151,8 +152,8 @@ def main():
     df_filtered = build_filtered_df(df_raw)
     df_pivot = build_pivot_df(df_filtered)
 
-    # 写入
-    date_str = datetime.datetime.now().strftime("%Y%m%d")
+    # 改成纽约时区
+    date_str = datetime.datetime.now(ZoneInfo("America/New_York")).strftime("%Y%m%d")
     create_and_write_sheet(date_str, df_filtered, headers)
     create_and_write_sheet(f"{date_str}_pivot table", df_pivot, headers)
 
