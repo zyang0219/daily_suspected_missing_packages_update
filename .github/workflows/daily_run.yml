@@ -2,9 +2,9 @@ name: Daily Feishu Update
 
 on:
   schedule:
-    # 纽约时间中午12点 = UTC 17:00（冬令时）/ UTC 16:00（夏令时）
+    # 纽约时间中午10点 = UTC 15:00（冬令时）/ UTC 14:00（夏令时）
     # 目前是夏令时，用16:00；冬令时改成17:00
-    - cron: '0 16 * * *'
+    - cron: '0 14 * * *'
   workflow_dispatch:  # 允许手动触发，方便测试
 
 jobs:
