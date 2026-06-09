@@ -46,7 +46,10 @@ def build_filtered_df(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     df["滞更天数"] = pd.to_numeric(df["滞更天数"], errors="coerce")
     df = df[df["滞更天数"] == 2].reset_index(drop=True)
-    df["站点"] = df["派送方"].astype(str).str[:3]
+    # 填充 index 列的空值，防止 pivot_table 丢弃这些行
+    df["快递员区域名称"] = df["快递员区域名称"].fillna("").astype(str)
+    df["轨迹部门"] = df["轨迹部门"].fillna("").astype(str)
+    df["派送方"] = df["派送方"].fillna("").astype(str)
     return df
 
 
@@ -54,24 +57,24 @@ def build_pivot_df(df_filtered: pd.DataFrame) -> pd.DataFrame:
     """生成带小计行和总计行的透视表"""
     pivot = pd.pivot_table(
         df_filtered,
-        index=["站点", "派送方", "快递员区域名称"],
+        index=["轨迹部门", "派送方", "快递员区域名称"],
         columns="轨迹节点",
         values="运单号",
         aggfunc="count",
         fill_value=0,
     ).reset_index()
 
-    node_cols = [c for c in pivot.columns if c not in ("站点", "派送方", "快递员区域名称")]
+    node_cols = [c for c in pivot.columns if c not in ("轨迹部门", "派送方", "快递员区域名称")]
     pivot["Total"] = pivot[node_cols].sum(axis=1)
 
     result_rows = []
-    for site, group in pivot.groupby("站点", sort=False):
+    for site, group in pivot.groupby("轨迹部门", sort=False):
         result_rows.extend(group.to_dict("records"))
-        subtotal = {"站点": f"{site} Total", "派送方": "", "快递员区域名称": ""}
+        subtotal = {"轨迹部门": f"{site} Total", "派送方": "", "快递员区域名称": ""}
         subtotal.update({col: group[col].sum() for col in node_cols + ["Total"]})
         result_rows.append(subtotal)
 
-    grand_total = {"站点": "Grand Total", "派送方": "", "快递员区域名称": ""}
+    grand_total = {"轨迹部门": "Grand Total", "派送方": "", "快递员区域名称": ""}
     grand_total.update({col: pivot[col].sum() for col in node_cols + ["Total"]})
     result_rows.append(grand_total)
 
@@ -79,8 +82,7 @@ def build_pivot_df(df_filtered: pd.DataFrame) -> pd.DataFrame:
     for col in node_cols + ["Total"]:
         final[col] = final[col].fillna(0).astype(int)
 
-    return final[["站点", "派送方", "快递员区域名称"] + node_cols + ["Total"]]
-
+    return final
 
 # ── 写入工具 ─────────────────────────────────────────────────
 def convert_excel_date(value, col_name: str):
