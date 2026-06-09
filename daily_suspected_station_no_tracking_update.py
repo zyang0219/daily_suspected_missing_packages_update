@@ -3,10 +3,11 @@
 import requests
 import pandas as pd
 import datetime
+import os
 
 # ── 配置 ────────────────────────────────────────────────────
-APP_ID = "cli_aaaa63af823a9ce3"
-APP_SECRET = "yljUK3LoJCy4xznQRq9LMbuyd6fBnfv2"
+APP_ID = os.environ["APP_ID"]
+APP_SECRET = os.environ["APP_SECRET"]
 
 SOURCE_SPREADSHEET_TOKEN = "XRdMw9RsuiEBz6kAB5Xc3utLnbf"
 SOURCE_SHEET_ID = "ysztZJ"
